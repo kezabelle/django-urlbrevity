@@ -19,6 +19,8 @@ from .utils import decode_model_instance
 from .views import do_redirect
 from .views import do_internal_redirect
 
+from .sitemaps import ShortUrlSitemap
+
 
 __all__ = (
     'redirect_url',
@@ -39,4 +41,6 @@ __all__ = (
 
     'do_redirect',
     'do_internal_redirect',
+
+    'ShortUrlSitemap',
 )
