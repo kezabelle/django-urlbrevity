@@ -47,7 +47,9 @@ setup(
         'hashids>=1.0',
     ],
     tests_require=[
+        'coverage>=3.7',
         'pytest>=2.6',
+        'pytest-cov>=1.8',
     ],
     cmdclass={'test': PyTest},
     author="Keryn Knight",

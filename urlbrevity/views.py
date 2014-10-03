@@ -16,14 +16,14 @@ logger = logging.getLogger(__name__)
 def _get_obj_url(request, obj):
     try:
         url = obj.get_absolute_url()
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         msg = ("This model instance doesn't have an implementation of "
                "get_absolute_url")
         logger.error(msg, exc_info=1, extra={'request': request, 'status': 404})
         raise View404(msg)
-    if not url:
+    if not url:  # pragma: no cover
         raise View404("Empty url to redirect to")
-    if not is_safe_url(url):
+    if not is_safe_url(url):  # pragma: no cover
         raise View404("Unsafe redirection")
     return url
 

@@ -1,0 +1,27 @@
+[run]
+source = urlbrevity
+omit =
+    urlbrevity/test_*
+    */migrations/*
+    *__init__*
+    conftest.py
+    setup.py
+branch = True
+data_file = .coverage
+timid = False
+
+[report]
+exclude_lines =
+    pragma: no cover
+
+precision = 0
+show_missing = True
+omit =
+    urlbrevity/test_*
+    */migrations/*
+    *__init__*
+    conftest.py
+    setup.py
+
+[xml]
+output = coverage.xml
