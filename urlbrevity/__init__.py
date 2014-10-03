@@ -20,6 +20,7 @@ from .views import do_redirect
 from .views import do_internal_redirect
 
 from .sitemaps import ShortUrlSitemap
+from .feeds import ShortUrlFeed
 
 
 __all__ = (
@@ -43,4 +44,5 @@ __all__ = (
     'do_internal_redirect',
 
     'ShortUrlSitemap',
+    'ShortUrlFeed',
 )
