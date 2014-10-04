@@ -50,6 +50,8 @@ in your templates::
 
     {% load urlbrevity %}
     <a href="{% url 'urlbrevity:short' my_model_instance|hashid %}">...</a>
+    or ...
+    <a href="{{ my_model_instance|short_url }}">
 
 in your python::
 

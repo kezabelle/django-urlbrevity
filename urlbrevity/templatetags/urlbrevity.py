@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 from django import template
+from django.core.urlresolvers import NoReverseMatch
 from ..utils import encode_model_instance
+from ..utils import short_url
 
 
 register = template.Library()
@@ -17,5 +19,14 @@ def convert_model_instance_to_hashid(value):
     if encoded is None:  # pragma: no cover
         return ''
     return encoded.hash
+
+
+@register.filter(name='short_url')
+def convert_model_instance_to_url(value):
+    if not value:  # pragma: no cover
+        logger.warning("No useful input")
         return ''
-    return encoded
+    try:
+        return short_url(value)
+    except NoReverseMatch:  # pragma: no cover
+        return ''

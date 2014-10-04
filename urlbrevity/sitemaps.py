@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
 from django.contrib.sitemaps import Sitemap
-from django.core.urlresolvers import reverse
-from .utils import encode_model_instance
+from .utils import short_url
 
 
 class ShortUrlSitemap(Sitemap):
@@ -19,5 +18,4 @@ class ShortUrlSitemap(Sitemap):
         return tuple(chain.from_iterable(self.get_querysets()))
 
     def location(self, obj):
-        encoded = encode_model_instance(obj)
-        return reverse('urlbrevity:short', kwargs={'encoded_value': encoded})
+        return short_url(obj)

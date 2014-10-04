@@ -4,6 +4,7 @@ import logging
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
+from django.core.urlresolvers import reverse
 from django.db import DatabaseError
 from django.http import Http404
 from hashids import Hashids
@@ -136,3 +137,8 @@ def decode_model_instance(hashid):
         return get_encoded_object_or_404(hashid).obj
     except Http404:   # pragma: no cover
         return None
+
+
+def short_url(obj):
+    encoded = encode_model_instance(obj=obj).hash
+    return reverse('urlbrevity:short', kwargs={'encoded_value': encoded})

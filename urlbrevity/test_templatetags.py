@@ -53,3 +53,15 @@ def test_generating_urls():
     })
     rendered = template.render(context).strip()
     assert rendered == '<a href="/redirect/yQfW">test4</a>'
+
+@mark.django_db
+def test_generating_short_urls_via_filter():
+    template = Template("""
+    {% load urlbrevity %}
+    <a href="{{ obj|short_url }}">test5</a>
+    """)
+    context = Context({
+        'obj': User.objects.create()
+    })
+    rendered = template.render(context).strip()
+    assert rendered == '<a href="/redirect/yQfW">test5</a>'

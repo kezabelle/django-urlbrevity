@@ -15,6 +15,7 @@ from .utils import decode
 from .utils import get_encoded_object_or_404
 from .utils import encode_model_instance
 from .utils import decode_model_instance
+from .utils import short_url
 
 from .views import do_redirect
 from .views import do_internal_redirect
@@ -39,6 +40,7 @@ __all__ = (
     'get_encoded_object_or_404',
     'encode_model_instance',
     'decode_model_instance',
+    'short_url',
 
     'do_redirect',
     'do_internal_redirect',
