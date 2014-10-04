@@ -3,6 +3,7 @@ import logging
 from django.http import HttpResponsePermanentRedirect
 from .utils import get_encoded_object_or_404
 from .errors import View404
+from .signals import shortened_url
 from django.core.urlresolvers import resolve, Resolver404
 from django.utils.http import is_safe_url
 from django.views.decorators.http import require_safe
@@ -43,6 +44,10 @@ def do_redirect(request, encoded_value):
     decoded = get_encoded_object_or_404(encoded_value)
     instance = decoded.obj
     url = _get_obj_url(request=request, obj=instance)
+    shortened_url.send(sender=instance.__class__,
+                       instance=instance, url=url,
+                       content_type=decoded.content_type,
+                       encoded=decoded.hash, decoded=decoded.decoded_hash)
     return HttpResponsePermanentRedirect(redirect_to=url)
 
 
@@ -55,6 +60,10 @@ def do_internal_redirect(request, encoded_value):
     decoded = get_encoded_object_or_404(encoded_value)
     instance = decoded.obj
     url = _get_obj_url(request=request, obj=instance)
+    shortened_url.send(sender=instance.__class__,
+                       instance=instance, url=url,
+                       content_type=decoded.content_type,
+                       encoded=decoded.hash, decoded=decoded.decoded_hash)
     return _resolve_and_call(request=request, url=url)
 
 
@@ -77,6 +86,10 @@ class DoRedirect(View):
         decoded = self.get_object(*args, **kwargs)
         self.object = decoded.obj
         self.url = self.get_absolute_url(*args, **kwargs)
+        shortened_url.send(sender=self.object.__class__,
+                           instance=self.object, url=self.url,
+                           content_type=decoded.content_type,
+                           encoded=decoded.hash, decoded=decoded.decoded_hash)
         return self.render_to_response(*args, **kwargs)
 
     def render_to_response(self, *args, **kwargs):

@@ -17,6 +17,8 @@ from .utils import encode_model_instance
 from .utils import decode_model_instance
 from .utils import short_url
 
+from .signals import shortened_url
+
 from .views import do_redirect
 from .views import do_internal_redirect
 
@@ -41,6 +43,8 @@ __all__ = (
     'encode_model_instance',
     'decode_model_instance',
     'short_url',
+
+    'shortened_url',
 
     'do_redirect',
     'do_internal_redirect',

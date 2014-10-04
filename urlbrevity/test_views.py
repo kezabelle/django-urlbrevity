@@ -4,7 +4,8 @@ from django.contrib.admin.models import ADDITION
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import RequestFactory
-from urlbrevity.utils import encode
+from .utils import encode
+from .signals import shortened_url
 from .views import DoRedirect
 from .views import DoInternalRedirect
 from .views import do_redirect
@@ -87,3 +88,34 @@ def test_cbv_invalid_get_absolute_url_internal_redirect():
     request = RequestFactory().get('/')
     with raises(View404):
         view(request=request, encoded_value=enc)
+
+
+@mark.django_db
+def test_signals():
+    ct = ContentType.objects.get_for_model(User)
+    user = User.objects.create()
+    enc = encode(ct.pk, user.pk)
+    request = RequestFactory().get('/')
+
+    expecting_kwargs = {}
+
+    def listener(*args, **kwargs):
+        if 'signal' in kwargs:
+            kwargs.pop('signal')
+        expecting_kwargs.update(**kwargs)  # leak into above scope please.
+        return LogEntry.objects.create(user=kwargs['instance'],
+                                       action_flag=ADDITION)
+
+    shortened_url.connect(listener, sender=User, dispatch_uid="test")
+    do_redirect(request=request, encoded_value=enc)
+    shortened_url.disconnect(listener, sender=User)
+    assert len(expecting_kwargs) == 6
+    assert expecting_kwargs == {
+        'decoded': (4, 1),
+        'encoded': 'yQfW',
+        'instance': user,
+        'sender': User,
+        'content_type': ct,
+        'url': '/test_user/1/',
+    }
+    assert LogEntry.objects.count() == 1
