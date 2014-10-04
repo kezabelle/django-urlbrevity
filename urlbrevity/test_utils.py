@@ -10,6 +10,7 @@ from .utils import encode
 from .utils import _reduced_alphabet
 from .utils import decode
 from .utils import get_encoded_object_or_404
+from .utils import ShortUrl
 
 
 def test_encode():
@@ -53,3 +54,17 @@ def test_get_encoded_object_or_404():
     enc = encode(ct.pk, user.pk)
     encoded_obj = get_encoded_object_or_404(enc)
     assert encoded_obj.obj == user
+
+
+@mark.django_db
+def test_shorturl_descriptor():
+    class UserProxy(User):
+        short_url = ShortUrl()
+
+        class Meta:
+            proxy = True
+
+    user = UserProxy.objects.create()
+    assert user.short_url == '/redirect/yQfW'
+    with raises(NotImplementedError):
+        user.short_url = 'test'

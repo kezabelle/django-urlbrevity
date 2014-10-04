@@ -16,6 +16,7 @@ from .utils import get_encoded_object_or_404
 from .utils import encode_model_instance
 from .utils import decode_model_instance
 from .utils import short_url
+from .utils import ShortUrl
 
 from .signals import shortened_url
 
@@ -43,6 +44,7 @@ __all__ = (
     'encode_model_instance',
     'decode_model_instance',
     'short_url',
+    'ShortUrl',
 
     'shortened_url',
 

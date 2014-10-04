@@ -142,3 +142,20 @@ def decode_model_instance(hashid):
 def short_url(obj):
     encoded = encode_model_instance(obj=obj).hash
     return reverse('urlbrevity:short', kwargs={'encoded_value': encoded})
+
+
+class ShortUrl(object):
+    """
+    Usage:
+    class MyModel(Model):
+        ...
+        short_url = ShortUrl()
+    """
+    __slots__ = ()
+
+    def __get__(self, instance, owner):
+        return short_url(obj=instance)
+
+    def __set__(self, instance, value):
+        raise NotImplementedError("Can't re-bind, because there's no "
+                                  "persistence backing this.")
