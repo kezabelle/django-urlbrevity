@@ -56,9 +56,14 @@ in your python::
     import urlbrevity
     obj = MyModel.objects.get(pk='...')
     encoded = urlbrevity.encode_model_instance(obj=obj)
-    url = reverse('urlbrevity:short', kwargs={'encoded_value': encoded})
+    value = encoded.hash
+    url = reverse('urlbrevity:short', kwargs={'encoded_value': value})
+    # or ...
+    url2 = urlbrevity.short_url(obj)
 
-    obj_again = urlbrevity.decode_model_instance(encoded)
+    # to re-inflate ...
+    obj_again = urlbrevity.decode_model_instance(value)
+
 
 
 Why internal redirects?

@@ -51,5 +51,5 @@ def test_get_encoded_object_or_404():
     ct = ContentType.objects.get_for_model(User)
     user = User.objects.create()
     enc = encode(ct.pk, user.pk)
-    obj = get_encoded_object_or_404(enc)
-    assert obj == user
+    encoded_obj = get_encoded_object_or_404(enc)
+    assert encoded_obj.obj == user

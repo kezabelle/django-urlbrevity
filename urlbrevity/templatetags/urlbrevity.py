@@ -10,10 +10,12 @@ logger = logging.getLogger(__name__)
 
 @register.filter(name='hashid', is_safe=True)
 def convert_model_instance_to_hashid(value):
-    if not value:
+    if not value:  # pragma: no cover
         logger.warning("No useful input")
         return ''
     encoded = encode_model_instance(obj=value)
-    if encoded is None:
+    if encoded is None:  # pragma: no cover
+        return ''
+    return encoded.hash
         return ''
     return encoded

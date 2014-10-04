@@ -4,7 +4,6 @@ from django.http import HttpResponsePermanentRedirect
 from .utils import get_encoded_object_or_404
 from .errors import View404
 from django.core.urlresolvers import resolve, Resolver404
-from django.shortcuts import redirect
 from django.utils.http import is_safe_url
 from django.views.decorators.http import require_safe
 from django.views.generic import View
@@ -41,7 +40,8 @@ def _resolve_and_call(request, url):
 
 @require_safe
 def do_redirect(request, encoded_value):
-    instance = get_encoded_object_or_404(encoded_value)
+    decoded = get_encoded_object_or_404(encoded_value)
+    instance = decoded.obj
     url = _get_obj_url(request=request, obj=instance)
     return HttpResponsePermanentRedirect(redirect_to=url)
 
@@ -52,7 +52,8 @@ def do_internal_redirect(request, encoded_value):
     We don't allow unsafe request methods, because this isn't the canonical
     URL to point to.
     """
-    instance = get_encoded_object_or_404(encoded_value)
+    decoded = get_encoded_object_or_404(encoded_value)
+    instance = decoded.obj
     url = _get_obj_url(request=request, obj=instance)
     return _resolve_and_call(request=request, url=url)
 
@@ -66,21 +67,22 @@ def do_internal_redirect(request, encoded_value):
 class DoRedirect(View):
     http_method_names = ['get', 'head']
 
-    def get_object(self):
+    def get_object(self, *args, **kwargs):
         return get_encoded_object_or_404(self.kwargs['encoded_value'])
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, *args, **kwargs):
         return _get_obj_url(request=self.request, obj=self.object)
 
     def get(self, *args, **kwargs):
-        self.object = self.get_object()
-        self.url = self.get_absolute_url()
-        return self.render_to_response()
+        decoded = self.get_object(*args, **kwargs)
+        self.object = decoded.obj
+        self.url = self.get_absolute_url(*args, **kwargs)
+        return self.render_to_response(*args, **kwargs)
 
-    def render_to_response(self):
+    def render_to_response(self, *args, **kwargs):
         return HttpResponsePermanentRedirect(redirect_to=self.url)
 
 
 class DoInternalRedirect(DoRedirect):
-    def render_to_response(self):
+    def render_to_response(self, *args, **kwargs):
         return _resolve_and_call(request=self.request, url=self.url)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import namedtuple
 import logging
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -61,6 +62,9 @@ def decode(value):
     return encoder.decrypt(value)
 
 
+DecodedHashid = namedtuple('DecodedHashid', 'obj content_type hash decoded_hash')  # noqa
+
+
 def get_encoded_object_or_404(hashid):
     try:
         decoded_tuple = decode(hashid)
@@ -101,7 +105,11 @@ def get_encoded_object_or_404(hashid):
                                                    ct_pk=content_type.pk))
         logger.error(msg, exc_info=1, extra={'status': 404})
         raise Model404(msg)
-    return obj
+    return DecodedHashid(obj=obj, content_type=content_type, hash=hashid,
+                         decoded_hash=decoded_tuple)
+
+
+EncodedModel = namedtuple('EncodedModel', 'obj content_type hash')
 
 
 def encode_model_instance(obj):
@@ -116,7 +124,7 @@ def encode_model_instance(obj):
                     exc_info=1)
         return None
     encoded = encode(content_type=content_type.pk, model_pk=obj.pk)
-    return encoded
+    return EncodedModel(obj=obj, content_type=content_type, hash=encoded)
 
 
 def decode_model_instance(hashid):
@@ -125,6 +133,6 @@ def decode_model_instance(hashid):
     raising an error.
     """
     try:
-        return get_encoded_object_or_404(hashid)
-    except Http404:
+        return get_encoded_object_or_404(hashid).obj
+    except Http404:   # pragma: no cover
         return None
