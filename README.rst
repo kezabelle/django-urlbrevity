@@ -4,6 +4,9 @@ URL Brevity
 
 Another short-URL generator, based on `Hashids`_ and a reduced alphabet.
 
+.. image:: https://travis-ci.org/kezabelle/django-urlbrevity.svg?branch=master
+    :target: https://travis-ci.org/kezabelle/django-urlbrevity
+
 
 Why a reduced alphabet?
 -----------------------
