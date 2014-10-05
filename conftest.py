@@ -18,6 +18,7 @@ def pytest_configure():
         MIDDLEWARE_CLASSES=(),
         URLBREVITY_SALT='hello i am a test',
         ROOT_URLCONF='urlbrevity.test_urlconf',
+        SECRET_KEY='hello I am also a test',
     )
     if hasattr(django, 'setup'):
         django.setup()

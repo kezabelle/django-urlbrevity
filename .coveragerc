@@ -1,5 +1,7 @@
 [run]
 source = urlbrevity
+include =
+    urlbrevity/*
 omit =
     urlbrevity/test_*
     */migrations/*

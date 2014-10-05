@@ -8,7 +8,7 @@ from setuptools.command.test import test as TestCommand
 
 
 def make_readme(root_path):
-    FILES = ('README.rst', 'LICENSE', 'CHANGELOG', 'CONTRIBUTORS')
+    FILES = ('README.rst', 'TODO', 'CHANGELOG', 'CONTRIBUTORS', 'LICENSE')
     for filename in FILES:
         filepath = os.path.realpath(os.path.join(root_path, filename))
         if os.path.isfile(filepath):
@@ -50,6 +50,7 @@ setup(
         'coverage>=3.7',
         'pytest>=2.6',
         'pytest-cov>=1.8',
+        'pytest-django>=2.7',
     ],
     cmdclass={'test': PyTest},
     author="Keryn Knight",
