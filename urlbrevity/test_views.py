@@ -4,6 +4,7 @@ from django.contrib.admin.models import ADDITION
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import RequestFactory
+from django.utils.encoding import force_text
 from .utils import encode
 from .signals import shortened_url
 from .views import DoRedirect
@@ -19,7 +20,7 @@ User.get_absolute_url = lambda self: '/test_user/{pk}/'.format(pk=self.pk)
 LogEntry.get_absolute_url = lambda self: '/goes/nowhere/'
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_do_redirect():
     ct = ContentType.objects.get_for_model(User)
     user = User.objects.create()
@@ -27,10 +28,10 @@ def test_do_redirect():
     request = RequestFactory().get('/')
     response = do_redirect(request=request, encoded_value=enc)
     assert response.status_code == 301
-    assert response['Location'] == '/test_user/1/'
+    assert response['Location'] == '/test_user/{0}/'.format(user.pk)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_do_internal_redirect():
     ct = ContentType.objects.get_for_model(User)
     User.objects.create(username='test')
@@ -39,10 +40,10 @@ def test_do_internal_redirect():
     request = RequestFactory().get('/')
     response = do_internal_redirect(request=request, encoded_value=enc)
     assert response.status_code == 200
-    assert response.content == str(user2.pk)
+    assert force_text(response.content) == force_text(user2.pk)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_invalid_get_absolute_url_internal_redirect():
     ct = ContentType.objects.get_for_model(LogEntry)
     user = User.objects.create()
@@ -53,7 +54,7 @@ def test_invalid_get_absolute_url_internal_redirect():
         do_internal_redirect(request=request, encoded_value=enc)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_cbv_do_redirect():
     ct = ContentType.objects.get_for_model(User)
     user = User.objects.create()
@@ -62,10 +63,10 @@ def test_cbv_do_redirect():
     request = RequestFactory().get('/')
     response = view(request=request, encoded_value=enc)
     assert response.status_code == 301
-    assert response['Location'] == '/test_user/1/'
+    assert response['Location'] == '/test_user/{0}/'.format(user.pk)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_cbv_do_internal_redirect():
     ct = ContentType.objects.get_for_model(User)
     User.objects.create(username='test')
@@ -75,10 +76,10 @@ def test_cbv_do_internal_redirect():
     request = RequestFactory().get('/')
     response = view(request=request, encoded_value=enc)
     assert response.status_code == 200
-    assert response.content == str(user2.pk)
+    assert force_text(response.content) == force_text(user2.pk)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_cbv_invalid_get_absolute_url_internal_redirect():
     ct = ContentType.objects.get_for_model(LogEntry)
     user = User.objects.create()
@@ -90,7 +91,7 @@ def test_cbv_invalid_get_absolute_url_internal_redirect():
         view(request=request, encoded_value=enc)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_signals():
     ct = ContentType.objects.get_for_model(User)
     user = User.objects.create()
@@ -111,11 +112,11 @@ def test_signals():
     shortened_url.disconnect(listener, sender=User)
     assert len(expecting_kwargs) == 6
     assert expecting_kwargs == {
-        'decoded': (4, 1),
-        'encoded': 'yQfW',
+        'decoded': (ct.pk, user.pk),
+        'encoded': enc,
         'instance': user,
         'sender': User,
         'content_type': ct,
-        'url': '/test_user/1/',
+        'url': '/test_user/{0}/'.format(user.pk),
     }
     assert LogEntry.objects.count() == 1

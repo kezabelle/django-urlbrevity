@@ -10,6 +10,7 @@ from .utils import encode
 from .utils import _reduced_alphabet
 from .utils import decode
 from .utils import get_encoded_object_or_404
+from .utils import short_url
 from .utils import ShortUrl
 
 
@@ -32,14 +33,14 @@ def test_invalid_input_get_encoded_object_or_404():
         get_encoded_object_or_404({'a': 1})
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_invalid_decoded_content_type_get_encoded_object_or_404():
     enc = encode(99999, 1)
     with raises(ContentType404):
         get_encoded_object_or_404(enc)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_invalid_obj_get_encoded_object_or_404():
     ct = ContentType.objects.all()[0]
     enc = encode(ct.pk, 99999)
@@ -47,7 +48,7 @@ def test_invalid_obj_get_encoded_object_or_404():
         get_encoded_object_or_404(enc)
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_get_encoded_object_or_404():
     ct = ContentType.objects.get_for_model(User)
     user = User.objects.create()
@@ -56,7 +57,7 @@ def test_get_encoded_object_or_404():
     assert encoded_obj.obj == user
 
 
-@mark.django_db
+@mark.django_db(transaction=True)
 def test_shorturl_descriptor():
     class UserProxy(User):
         short_url = ShortUrl()
@@ -65,6 +66,6 @@ def test_shorturl_descriptor():
             proxy = True
 
     user = UserProxy.objects.create()
-    assert user.short_url == '/redirect/yQfW'
+    assert user.short_url == short_url(user)
     with raises(NotImplementedError):
         user.short_url = 'test'
