@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from pytest import mark
+import django
 from django.contrib.auth.models import User
 from django.template import Template
 from django.template import Context
@@ -52,6 +53,13 @@ def test_generating_urls():
     {% load urlbrevity %}
     <a href="{% url 'urlbrevity:short' obj|hashid %}">test4</a>
     """)
+    # special case the template for 1.4.x, where we need to the future url tag
+    if django.VERSION[:2] == (1, 4):
+        template = Template("""
+        {% load urlbrevity %}
+        {% load url from future %}
+        <a href="{% url 'urlbrevity:short' obj|hashid %}">test4</a>
+        """)
     user = User.objects.create()
     context = Context({
         'obj': user
