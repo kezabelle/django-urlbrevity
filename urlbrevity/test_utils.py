@@ -15,17 +15,17 @@ from .utils import ShortUrl
 
 
 def test_encode():
-    assert encode(1, 2) == 'rQuX'
+    assert encode(1, 2) == 'oyuw'
 
 
 def test_decode():
-    assert decode('rQuX') == (1, 2)
+    assert decode('oyuw') == (1, 2)
 
 
 def test_reduced_alphabet():
     class StableTestAlphabet(object):
         ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'  # noqa
-    assert _reduced_alphabet(StableTestAlphabet) == '-34679=FHQRUWXY_fhioqrsuwxy'  # noqa
+    assert _reduced_alphabet(StableTestAlphabet) == '34679FHQRUWXYfhioqrsuwxy'
 
 
 def test_invalid_input_get_encoded_object_or_404():

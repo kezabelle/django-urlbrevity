@@ -34,11 +34,9 @@ def _reduced_alphabet(cls):
     aa_letters = frozenset('ajk AJK')
     # these sound like "m"
     m_letters = frozenset('mn MN')
-    # provide a slightly larger keyspace by including easy extra safe chars.
-    extras = frozenset('-_=')
 
     alphabet = (base_alphabet - letters_numbers - numbers -
-                ee_letters - aa_letters - m_letters) | extras
+                ee_letters - aa_letters - m_letters)
     logger.debug("available alphabet is: {0!r}".format(alphabet))
     return ''.join(sorted(alphabet))
 
