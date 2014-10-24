@@ -22,7 +22,7 @@ def test_urlbrevity_management_command():
     stdout = StringIO()
     call_command('urlbrevity', '1lLi', 'yyyy', enc, enc2, verbosity=2,
                  interactive=False, stdout=stdout)
-    msg = ("`1lLi` contains invalid characters: 1, l, L\n"
+    msg = ("`1lLi` contains invalid characters: 1, L, l\n"
            "`yyyy` does not resolve to a model instance\n"
            "`{enc}` decodes into {tup1!r}\n"
            "`{enc}` resolves to a <User> instance\n"

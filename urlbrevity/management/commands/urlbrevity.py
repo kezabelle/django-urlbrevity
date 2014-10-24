@@ -17,7 +17,7 @@ class Command(BaseCommand):
             if len(leftovers) > 0:
                 msg = '`{surl!s}` contains invalid characters: {chars!s}'
                 self.stdout.write(msg.format(surl=short_url,
-                                             chars=', '.join(leftovers)))
+                                             chars=', '.join(sorted(leftovers))))  # noqa
                 continue  # to next iteration
 
             try:
