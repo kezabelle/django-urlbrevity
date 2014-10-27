@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from pytest import mark
+from django import VERSION
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
@@ -10,7 +11,11 @@ except ImportError:
 from .utils import encode
 
 
+is_django_14 = VERSION[0:2] == (1, 4)
+
+
 @mark.django_db(transaction=True)
+@mark.xfail(is_django_14, reason="Django 1.4 doesn't do newlines automatically")
 def test_urlbrevity_management_command():
     ct = ContentType.objects.get_for_model(User)
     user = User.objects.create(username='test_urlbrevity_management_command1')
