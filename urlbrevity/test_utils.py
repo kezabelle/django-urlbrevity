@@ -7,6 +7,7 @@ from .errors import Decode404
 from .errors import ContentType404
 from .errors import Model404
 from .utils import encode
+from .utils import encode_model_instance
 from .utils import _reduced_alphabet
 from .utils import decode
 from .utils import get_encoded_object_or_404
@@ -57,6 +58,13 @@ def test_get_encoded_object_or_404():
     assert encoded_obj.obj == user
 
 
+def test_encode_instance_no_absolute_url():
+    class PretendModel(object):
+        pk = 1
+    enc = encode_model_instance(PretendModel())
+    assert enc is None
+
+
 @mark.django_db(transaction=True)
 def test_shorturl_descriptor():
     class UserProxy(User):
@@ -69,3 +77,10 @@ def test_shorturl_descriptor():
     assert user.short_url == short_url(user)
     with raises(NotImplementedError):
         user.short_url = 'test'
+
+
+def test_short_url_may_return_none():
+    class PretendModel(object):
+        pk = 1
+    result = short_url(PretendModel())
+    assert result is None

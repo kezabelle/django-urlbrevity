@@ -115,6 +115,9 @@ def encode_model_instance(obj):
     if not hasattr(obj, 'pk'):
         logger.info("Probably not a model instance")
         return None
+    if not hasattr(obj, 'get_absolute_url'):
+        logger.info("{obj!r} has no `get_absolute_url` method".format(obj=obj))
+        return None
     try:
         content_type = ContentType.objects.get_for_model(obj)
     except (ContentType.DoesNotExist, DatabaseError):  # pragma: no cover
@@ -138,8 +141,10 @@ def decode_model_instance(hashid):
 
 
 def short_url(obj):
-    encoded = encode_model_instance(obj=obj).hash
-    return reverse('urlbrevity:short', kwargs={'encoded_value': encoded})
+    encoded = encode_model_instance(obj=obj)
+    if encoded is None:
+        return None
+    return reverse('urlbrevity:short', kwargs={'encoded_value': encoded.hash})
 
 
 class ShortUrl(object):

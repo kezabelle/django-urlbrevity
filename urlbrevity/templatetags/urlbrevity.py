@@ -27,6 +27,9 @@ def convert_model_instance_to_url(value):
         logger.warning("No useful input")
         return ''
     try:
-        return short_url(value)
+        url = short_url(value)
     except NoReverseMatch:  # pragma: no cover
         return ''
+    if url is None:
+        return ''
+    return url
