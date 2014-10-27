@@ -51,5 +51,12 @@ class Command(BaseCommand):
             except (NoReverseMatch, Resolver404) as e:  # pragma: no cover
                 continue
 
-            msg = "`{surl!s}` is available via the `{view!s}` view"
-            self.stdout.write(msg.format(surl=short_url, view=func.func.func_name))
+            try:
+                func_name = func.func.__name__
+            except AttributeError:  # pragma: no cover ... python2
+                func_name = func.func.func_name
+
+            msg = ("`{surl!s}` is available via the `{view!s}` view, "
+                   "via `{reverse!s}`")
+            self.stdout.write(msg.format(surl=short_url, view=func_name,
+                                         reverse=func.view_name))

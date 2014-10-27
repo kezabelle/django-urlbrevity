@@ -27,11 +27,13 @@ def test_urlbrevity_management_command():
            "`{enc}` decodes into {tup1!r}\n"
            "`{enc}` resolves to a <User> instance\n"
            "`{enc}` is a short URL for `/test_user/{pk1}/`\n"
-           "`{enc}` is available via the `do_redirect` view\n"
+           "`{enc}` is available via the `do_redirect` view, "
+           "via `urlbrevity:short`\n"
            "`{enc2}` decodes into {tup2!r}\n"
            "`{enc2}` resolves to a <User> instance\n"
            "`{enc2}` is a short URL for `/test_user/{pk2}/`\n"
-           "`{enc2}` is available via the `do_redirect` view\n")
+           "`{enc2}` is available via the `do_redirect` view, "
+           "via `urlbrevity:short`\n")
     assert stdout.getvalue() == msg.format(enc=enc, enc2=enc2, tup1=tup1,
                                            tup2=tup2, pk1=user.pk,
                                            pk2=user2.pk)
